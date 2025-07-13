@@ -1,0 +1,32 @@
+{
+  "name": "question-bank-cli",
+  "version": "1.0.0",
+  "description": "CLI application to fetch and manage coding questions from Deepseek API",
+  "main": "src/cli.js",
+  "scripts": {
+    "start": "node src/cli.js",
+    "dev": "node src/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "questions",
+    "coding",
+    "deepseek",
+    "practice"
+  ],
+  "author": "Subham Satapathy",
+  "license": "ISC",
+  "bin": {
+    "question-bank": "./src/cli.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "inquirer": "^8.2.6",
+    "mongodb": "^6.17.0",
+    "mongoose": "^8.16.3"
+  }
+}

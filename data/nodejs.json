@@ -1,0 +1,458 @@
+[
+  {
+    "id": "node1",
+    "question": "What is the correct way to import the 'fs' module in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "modules",
+      "fs"
+    ],
+    "example": "const fs = require('fs');",
+    "options": [],
+    "answer": "Option B: const fs = require('fs');",
+    "timestamp": "2025-05-25T16:33:33.159Z",
+    "hash": "37d7fbe98e8cbf52844c2f5b396620e7f3e31c35d2462f1bfa0a8e0e08ae8487",
+    "savedAt": "2025-05-25T16:33:33.163Z"
+  },
+  {
+    "id": "node2",
+    "question": "Which method is used to create a new HTTP server in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "http",
+      "server"
+    ],
+    "example": "const server = http.createServer();",
+    "options": [],
+    "answer": "Option B: http.createServer()",
+    "timestamp": "2025-05-25T16:33:33.160Z",
+    "hash": "20cedc140919ea998eb1e2a78be9ec21af14757eeac77c2efd0e88fd5270c024",
+    "savedAt": "2025-05-25T16:33:33.163Z"
+  },
+  {
+    "id": "node3",
+    "question": "What is the purpose of the 'process' object in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "process",
+      "globals"
+    ],
+    "example": "console.log(process.env);",
+    "options": [],
+    "answer": "Option C: To provide information about the current Node.js process",
+    "timestamp": "2025-05-25T16:33:33.160Z",
+    "hash": "ed89d8a2cdc56bc26da695d22fb5341c37a019340ab3015a6ca3d3e6cfa5957f",
+    "savedAt": "2025-05-25T16:33:33.163Z"
+  },
+  {
+    "question": "Create a simple HTTP server that handles GET requests.",
+    "difficulty": "easy",
+    "tags": [
+      "http",
+      "server"
+    ],
+    "example": "Server should respond to /api/health endpoint",
+    "options": [
+      "Use http.createServer() method",
+      "Use Express.js framework",
+      "Use Fastify framework",
+      "Use built-in URL module for routing"
+    ],
+    "answer": "Use http.createServer() method",
+    "id": "nodejs_mixed_mock_1748190813160_0",
+    "topic": "nodejs",
+    "timestamp": "2025-05-25T16:33:33.160Z",
+    "hash": "84bcf0402aaa83c122a1aa530d8637d50cba68195ef37722c34511b0cf3258bb",
+    "savedAt": "2025-05-25T16:33:33.163Z"
+  },
+  {
+    "question": "Implement a file upload handler with size validation.",
+    "difficulty": "medium",
+    "tags": [
+      "file-system",
+      "validation"
+    ],
+    "example": "Upload should reject files larger than 5MB",
+    "options": [
+      "Use multer middleware with limits",
+      "Use fs.createReadStream() with size checking",
+      "Use formidable with maxFileSize option",
+      "Manual buffer size validation"
+    ],
+    "answer": "Use multer middleware with limits",
+    "id": "nodejs_mixed_mock_1748190813160_1",
+    "topic": "nodejs",
+    "timestamp": "2025-05-25T16:33:33.160Z",
+    "hash": "a729a3cb02681c78c6f676032114024442fa5c74377be2ee16ccbe483dd208f3",
+    "savedAt": "2025-05-25T16:33:33.163Z"
+  },
+  {
+    "question": "Create a rate limiter middleware for Express applications.",
+    "difficulty": "hard",
+    "tags": [
+      "middleware",
+      "rate-limiting",
+      "redis"
+    ],
+    "example": "Limit to 100 requests per hour per IP",
+    "options": [
+      "Use Redis with sliding window algorithm",
+      "Use in-memory Map with token bucket",
+      "Use express-rate-limit package",
+      "Use fixed window counter approach"
+    ],
+    "answer": "Use Redis with sliding window algorithm",
+    "id": "nodejs_mixed_mock_1748190813160_2",
+    "topic": "nodejs",
+    "timestamp": "2025-05-25T16:33:33.160Z",
+    "hash": "92dfd3928599eefa09875cef8e33b64329c51ef9db02149d580a501cac64e310",
+    "savedAt": "2025-05-25T16:33:33.163Z"
+  },
+  {
+    "id": "nodejs_easy_1",
+    "question": "How do you import the 'fs' module in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "modules",
+      "filesystem"
+    ],
+    "example": "",
+    "options": [
+      "Option A: const fs = require('fs');",
+      "Option B: import fs from 'fs';",
+      "Option C: const fs = include('fs');",
+      "Option D: const fs = import('fs');"
+    ],
+    "answer": "Option A: const fs = require('fs');",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "a2686f16951e4f5f7e2c40a11742b6c3f74672728ec842afa1f1cb8a37685beb",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_3",
+    "question": "What is the correct way to read a file asynchronously in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "filesystem",
+      "async"
+    ],
+    "example": "",
+    "options": [
+      "Option A: fs.readFileSync('file.txt');",
+      "Option B: fs.read('file.txt');",
+      "Option C: fs.readFile('file.txt', callback);",
+      "Option D: fs.readAsync('file.txt');"
+    ],
+    "answer": "Option C: fs.readFile('file.txt', callback);",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "e2b4f6decad1a0e8caa0708672e3e7a8244f13c2b2aa94dd8628f4136a4ad73d",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_4",
+    "question": "Which of the following is a core module in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "modules"
+    ],
+    "example": "",
+    "options": [
+      "Option A: express",
+      "Option B: mongoose",
+      "Option C: path",
+      "Option D: axios"
+    ],
+    "answer": "Option C: path",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "6fefc6c77fcf94bf5cc50783b8f279efc2dfd567add80b42bd1e8a63d8271541",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_5",
+    "question": "How do you start a Node.js application?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "basics"
+    ],
+    "example": "",
+    "options": [
+      "Option A: node start app.js",
+      "Option B: npm start app.js",
+      "Option C: node app.js",
+      "Option D: run node app.js"
+    ],
+    "answer": "Option C: node app.js",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "cdb145de1724b489e68d1b5687222b7333e7d635758d41a8d19568d9f65e3e1c",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_6",
+    "question": "Which method is used to handle GET requests in Express.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "express",
+      "http"
+    ],
+    "example": "",
+    "options": [
+      "Option A: app.post()",
+      "Option B: app.get()",
+      "Option C: app.put()",
+      "Option D: app.fetch()"
+    ],
+    "answer": "Option B: app.get()",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "498594d18b74baba2a5b38152e2ca0367d3885d5181558b97170c60ca6dcb952",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_7",
+    "question": "What is the global object in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "globals"
+    ],
+    "example": "",
+    "options": [
+      "Option A: window",
+      "Option B: document",
+      "Option C: global",
+      "Option D: root"
+    ],
+    "answer": "Option C: global",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "6eeee7b84cfc8c751a10d30a02e578f5293e630ab09d4a9a706f718c70c1ffaf",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_8",
+    "question": "Which function is used to execute a callback after a delay in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "timers"
+    ],
+    "example": "",
+    "options": [
+      "Option A: setTimeout()",
+      "Option B: delay()",
+      "Option C: sleep()",
+      "Option D: wait()"
+    ],
+    "answer": "Option A: setTimeout()",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "d5c82c19ebfcb92740a4879ce4b904e807a298a9c2bd022d4f587cf53a981056",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_9",
+    "question": "How do you install a package locally using npm?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "npm"
+    ],
+    "example": "",
+    "options": [
+      "Option A: npm install -g package-name",
+      "Option B: npm add package-name",
+      "Option C: npm install package-name",
+      "Option D: npm get package-name"
+    ],
+    "answer": "Option C: npm install package-name",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "6e354934e5acc9a9566ed06ba2a87579c8da7bf475be90f29c2bd0fc931f4ff1",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_10",
+    "question": "What does the 'require' function do in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "modules"
+    ],
+    "example": "",
+    "options": [
+      "Option A: It includes a module in the current file.",
+      "Option B: It exports a module.",
+      "Option C: It runs a script.",
+      "Option D: It loads a CSS file."
+    ],
+    "answer": "Option A: It includes a module in the current file.",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "74657d49fbc8b7edd88be1ef7107aa6f6a5990c3bff4092d1cad2e8e2e26f6e0",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_11",
+    "question": "Which of the following is NOT a valid Node.js stream type?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "streams"
+    ],
+    "example": "",
+    "options": [
+      "Option A: Readable",
+      "Option B: Writable",
+      "Option C: Transform",
+      "Option D: Executable"
+    ],
+    "answer": "Option D: Executable",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "5cdd408ff67c5f88a5437a9b60e9c069b213e12c22dfc76d0880baf3b10c07a6",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_12",
+    "question": "How do you check the current version of Node.js installed?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "basics"
+    ],
+    "example": "",
+    "options": [
+      "Option A: node --status",
+      "Option B: node --info",
+      "Option C: node --version",
+      "Option D: node --check"
+    ],
+    "answer": "Option C: node --version",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "5b8eb8eaac02102d5b3708ae4e26222d739e203e98c33621e8508048aa8a5b12",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_13",
+    "question": "What is the purpose of the 'package.json' file in a Node.js project?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "npm"
+    ],
+    "example": "",
+    "options": [
+      "Option A: It stores the project's source code.",
+      "Option B: It contains metadata about the project and its dependencies.",
+      "Option C: It configures the Node.js runtime.",
+      "Option D: It defines the project's folder structure."
+    ],
+    "answer": "Option B: It contains metadata about the project and its dependencies.",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "582140b96cd9e4e70bfbe25457fd760f43e357191fc4ef03f52fb0d2c7b8840f",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_14",
+    "question": "Which method is used to write data to a file asynchronously in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "filesystem",
+      "async"
+    ],
+    "example": "",
+    "options": [
+      "Option A: fs.writeFile()",
+      "Option B: fs.write()",
+      "Option C: fs.appendFile()",
+      "Option D: fs.outputFile()"
+    ],
+    "answer": "Option A: fs.writeFile()",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "3b5af8baa090a06be2cc063a5730c9492b5fed50334815b05926d391ec65af3b",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "nodejs_easy_15",
+    "question": "What is 'npm' in the context of Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "npm"
+    ],
+    "example": "",
+    "options": [
+      "Option A: A JavaScript runtime.",
+      "Option B: A package manager for Node.js.",
+      "Option C: A framework for building APIs.",
+      "Option D: A testing library."
+    ],
+    "answer": "Option B: A package manager for Node.js.",
+    "timestamp": "2025-05-25T16:34:49.922Z",
+    "hash": "c1a077585f6b2a584110021e4241a798cd7a341c46b5c8015aa559b727cd3741",
+    "savedAt": "2025-05-25T16:34:49.924Z"
+  },
+  {
+    "id": "1",
+    "question": "How can you read a file asynchronously in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "general"
+    ],
+    "example": "const fs = require('fs');\nfs.readFile('file.txt', 'utf8', (err, data) => {\n if (err) throw err;\n console.log(data);\n});",
+    "options": [],
+    "answer": "Using fs.readFile with a callback",
+    "timestamp": "2025-05-25T16:37:04.510Z",
+    "hash": "31fb01bc44c85e5bb0fd76fbbd25f847ae4a012e0d0b699e73895064feb300e5",
+    "savedAt": "2025-05-25T16:37:04.513Z"
+  },
+  {
+    "id": "2",
+    "question": "What is the purpose of the 'require' function in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "general"
+    ],
+    "example": "const module = require('module-name');",
+    "options": [],
+    "answer": "To import modules",
+    "timestamp": "2025-05-25T16:37:04.510Z",
+    "hash": "00e7fa965b7670f103fdc789d3d9c9b4a01c9206cc95f62738cfe989fa8a4334",
+    "savedAt": "2025-05-25T16:37:04.513Z"
+  },
+  {
+    "id": "3",
+    "question": "How can you handle environment variables in Node.js?",
+    "difficulty": "easy",
+    "topic": "nodejs",
+    "tags": [
+      "general"
+    ],
+    "example": "require('dotenv').config();\nconsole.log(process.env.VARIABLE);",
+    "options": [],
+    "answer": "Using the 'dotenv' package",
+    "timestamp": "2025-05-25T16:37:04.510Z",
+    "hash": "85eb54b5f9cb3f7590968e562e6ce5246cbc1a6ae0393fc77ccc37d1d4b6dc0a",
+    "savedAt": "2025-05-25T16:37:04.513Z"
+  },
+  {
+    "id": "4",
+    "question": "What is the correct way to create an HTTP server in Node.js?",
+    "difficulty": "medium",
+    "topic": "nodejs",
+    "tags": [
+      "general"
+    ],
+    "example": "const http = require('http');\nconst server = http.createServer((req, res) => {\n res.end('Hello World');\n});\nserver.listen(3000);",
+    "options": [],
+    "answer": "Using http.createServer",
+    "timestamp": "2025-05-25T16:37:04.510Z",
+    "hash": "632b9ed2dea344dd4d2fa65905c8a9494d420a0afc5991bf234db392974bad02",
+    "savedAt": "2025-05-25T16:37:04.513Z"
+  }
+]
