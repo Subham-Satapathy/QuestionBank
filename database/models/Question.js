@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const databaseConfig = require('../../config/database');
 
 const questionSchema = new mongoose.Schema({
     id: {
@@ -10,7 +11,8 @@ const questionSchema = new mongoose.Schema({
     question: {
         type: String,
         required: true,
-        index: true
+        index: true,
+        trim: true
     },
     difficulty: {
         type: String,
@@ -21,24 +23,29 @@ const questionSchema = new mongoose.Schema({
     topic: {
         type: String,
         required: true,
+        enum: databaseConfig.topics || ['javascript', 'typescript', 'nodejs', 'sql', 'react'],
         index: true
     },
     tags: [{
         type: String,
-        index: true
+        index: true,
+        trim: true
     }],
     example: {
         type: String,
         required: false,
-        default: "No example provided"
+        default: "No example provided",
+        trim: true
     },
     options: [{
         type: String,
-        required: true
+        required: true,
+        trim: true
     }],
     answer: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     timestamp: {
         type: Date,
@@ -57,24 +64,14 @@ const questionSchema = new mongoose.Schema({
         index: true
     }
 }, {
-    timestamps: true // Adds createdAt and updatedAt fields
-});
-
-// Create compound indexes for efficient querying
-questionSchema.index({ topic: 1, difficulty: 1 });
-questionSchema.index({ topic: 1, tags: 1 });
-questionSchema.index({ difficulty: 1, tags: 1 });
-
-// Add text index for search functionality
-questionSchema.index({ 
-    question: 'text', 
-    example: 'text' 
+    timestamps: true, // Adds createdAt and updatedAt fields
+    collection: databaseConfig.collections.questions
 });
 
 // Pre-save middleware to ensure hash is set
 questionSchema.pre('save', function(next) {
     if (!this.hash) {
-        const { generateHash } = require('../utils');
+        const { generateHash } = require('../../utils/utils');
         this.hash = generateHash(this.question + this.topic);
     }
     next();
@@ -146,6 +143,20 @@ questionSchema.statics.getStats = function() {
             }
         }
     ]);
+};
+
+// Static method to get questions with pagination
+questionSchema.statics.getQuestionsWithPagination = function(topic, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    return this.find({ topic })
+        .sort({ savedAt: -1 })
+        .skip(skip)
+        .limit(limit);
+};
+
+// Static method to get total count by topic
+questionSchema.statics.getCountByTopic = function(topic) {
+    return this.countDocuments({ topic });
 };
 
 const Question = mongoose.model('Question', questionSchema);

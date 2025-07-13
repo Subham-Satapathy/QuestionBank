@@ -1,24 +1,28 @@
 {
   "name": "question-bank-cli",
-  "version": "1.0.0",
-  "description": "CLI application to fetch and manage coding questions from Deepseek API",
-  "main": "src/cli.js",
+  "version": "2.0.0",
+  "description": "CLI application to fetch and manage coding questions from Deepseek API with microservice architecture",
+  "main": "services/cli/cli.js",
   "scripts": {
-    "start": "node src/cli.js",
-    "dev": "node src/cli.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node services/cli/cli.js",
+    "dev": "node services/cli/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"Linting not configured yet\"",
+    "build": "echo \"No build step required\""
   },
   "keywords": [
     "cli",
     "questions",
     "coding",
     "deepseek",
-    "practice"
+    "practice",
+    "microservice",
+    "mongodb"
   ],
   "author": "Subham Satapathy",
   "license": "ISC",
   "bin": {
-    "question-bank": "./src/cli.js"
+    "question-bank": "./services/cli/cli.js"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -28,5 +32,14 @@
     "inquirer": "^8.2.6",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/question-bank-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/question-bank-cli/issues"
+  },
+  "homepage": "https://github.com/yourusername/question-bank-cli#readme"
 }

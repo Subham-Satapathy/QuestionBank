@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 const inquirer = require('inquirer');
-const { fetchQuestions } = require('./api');
-const { saveQuestions, getStats } = require('./mongoStorage');
-const { formatTopicName } = require('./utils');
+const { fetchQuestions } = require('../api/api');
+const { saveQuestions, getStats } = require('../storage/mongoStorage');
+const { formatTopicName } = require('../../utils/utils');
+const appConfig = require('../../config/app');
 
 async function main() {
     console.log('🎯 Welcome to Question Bank CLI!');
@@ -18,13 +19,10 @@ async function main() {
                 type: 'list',
                 name: 'topic',
                 message: 'Choose a programming topic:',
-                choices: [
-                    { name: 'JavaScript', value: 'javascript' },
-                    { name: 'TypeScript', value: 'typescript' },
-                    { name: 'Node.js', value: 'nodejs' },
-                    { name: 'SQL', value: 'sql' },
-                    { name: 'React', value: 'react' }
-                ]
+                choices: appConfig.topics.map(topic => ({
+                    name: formatTopicName(topic),
+                    value: topic
+                }))
             },
             {
                 type: 'list',
@@ -42,12 +40,10 @@ async function main() {
                 type: 'list',
                 name: 'count',
                 message: 'How many questions would you like to fetch?',
-                choices: [
-                    { name: '3 questions', value: 3 },
-                    { name: '5 questions (recommended)', value: 5 },
-                    { name: '10 questions', value: 10 },
-                    { name: '15 questions', value: 15 }
-                ],
+                choices: appConfig.questionCounts.map(count => ({
+                    name: `${count} questions`,
+                    value: count
+                })),
                 default: 1
             },
             {
@@ -75,6 +71,11 @@ async function main() {
         
         if (!questions || questions.length === 0) {
             console.log('❌ No questions were fetched from the API.');
+            console.log('💡 This could be due to:');
+            console.log('   • Invalid API key');
+            console.log('   • Network connectivity issues');
+            console.log('   • API service temporarily unavailable');
+            console.log('   • Malformed response from the API');
             return;
         }
 
@@ -118,7 +119,7 @@ async function main() {
             await main(); // Recursive call for another session
         } else {
             console.log('\n🎉 Thank you for using Question Bank CLI!');
-            console.log('📁 Your questions are saved in the data/ directory.');
+            console.log('☁️ Your questions are saved in MongoDB Atlas.');
             console.log('💡 Each question includes multiple solution approaches for learning.');
         }
         

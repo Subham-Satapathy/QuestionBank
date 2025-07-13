@@ -1,108 +1,270 @@
-# Question Bank CLI
+# Question Bank CLI - Microservice Architecture
 
-A Node.js CLI application to fetch and manage coding questions from Deepseek API via OpenRouter with duplicate detection and difficulty selection.
+A Node.js CLI application built with microservice architecture to fetch and manage coding questions from Deepseek API via OpenRouter. All questions are stored in MongoDB Atlas for cloud-based persistence and scalability.
 
-## Features
+## 🏗️ Architecture Overview
 
-- 🎯 Interactive CLI with topic selection (JavaScript, TypeScript, Node.js, SQL, React)
-- 🎚️ Difficulty selection (Easy, Medium, Hard, Mixed)
-- 🤖 Fetches questions from Deepseek API via OpenRouter using free model
-- 🔍 Hash-based duplicate detection to avoid storing duplicate questions
-- 📁 Organized JSON file storage by topic
-- 🔐 Secure API key management
-- 💡 Each question includes 4 multiple choice solution approaches
+This application follows a microservice architecture pattern with clear separation of concerns:
 
-## Setup
+```
+question-bank-cli/
+├── config/                 # Configuration management
+│   ├── app.js             # Application configuration
+│   ├── api.js             # API configuration
+│   └── database.js        # Database configuration
+├── database/              # Database layer
+│   ├── connections/       # Database connections
+│   │   └── mongo.js      # MongoDB connection management
+│   └── models/           # Database models
+│       └── Question.js   # Question schema and methods
+├── services/             # Microservices
+│   ├── api/             # API service
+│   │   └── api.js       # Deepseek API integration
+│   ├── storage/         # Storage service
+│   │   └── mongoStorage.js # MongoDB storage operations
+│   └── cli/             # CLI service
+│       └── cli.js       # Command-line interface
+├── utils/               # Utility functions
+│   └── utils.js         # Common utilities
+├── middleware/          # Middleware components
+│   ├── errorHandler.js  # Error handling middleware
+│   └── logger.js        # Logging middleware
+├── .env                 # Environment configuration
+├── package.json
+└── README.md
+```
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+## 🚀 Features
 
-2. **Configure API key:**
-   Create a `.env` file in the root directory:
-   ```bash
-   # OpenRouter API Configuration
-   API_KEY=your_openrouter_api_key_here
-   
-   # Optional: Custom site information
-   SITE_URL=http://localhost:3000
-   SITE_NAME=Question Bank CLI
-   ```
+- 🎯 **Interactive CLI** with topic selection (JavaScript, TypeScript, Node.js, SQL, React)
+- 🎚️ **Difficulty selection** (Easy, Medium, Hard, Mixed)
+- 🤖 **Deepseek API integration** via OpenRouter using free model
+- 🔍 **Hash-based duplicate detection** to avoid storing duplicate questions
+- ☁️ **MongoDB Atlas cloud storage** for scalability and accessibility
+- 🔐 **Secure configuration management** with environment variables
+- 💡 **Each question includes 4 multiple choice solution approaches**
+- 🏗️ **Microservice architecture** for maintainability and scalability
+- 📊 **Comprehensive logging and error handling**
 
-3. **Get OpenRouter API Key:**
-   - Visit [OpenRouter.ai](https://openrouter.ai)
-   - Sign up for a free account
-   - Get your API key from the dashboard
-   - The app uses the free `deepseek/deepseek-chat-v3-0324:free` model
+## 🛠️ Setup
 
-4. **Run the application:**
-   ```bash
-   npm start
-   ```
+### 1. Install Dependencies
+```bash
+npm install
+```
 
-## Usage
+### 2. Configure Environment Variables
+Create a `.env` file in the root directory:
+```bash
+# OpenRouter API Configuration
+API_KEY=your_openrouter_api_key_here
+
+# MongoDB Atlas Configuration
+MONGODB_URI=your_mongodb_atlas_connection_string
+
+# Application Configuration
+NODE_ENV=development
+LOG_LEVEL=info
+
+# Optional: Custom site information
+SITE_URL=http://localhost:3000
+SITE_NAME=Question Bank CLI
+```
+
+### 3. Get OpenRouter API Key
+- Visit [OpenRouter.ai](https://openrouter.ai)
+- Sign up for a free account
+- Get your API key from the dashboard
+- The app uses the free `deepseek/deepseek-chat-v3-0324:free` model
+
+### 4. Setup MongoDB Atlas
+- Create a MongoDB Atlas account at [mongodb.com](https://mongodb.com)
+- Create a new cluster (free tier available)
+- Get your connection string from the cluster
+- Add the connection string to your `.env` file
+
+### 5. Run the Application
+```bash
+npm start
+```
+
+## 📁 Project Structure
+
+### Configuration Layer (`config/`)
+- **app.js**: Application-wide configuration (topics, difficulties, etc.)
+- **api.js**: API service configuration (endpoints, timeouts, retries)
+- **database.js**: Database configuration (connection strings, indexes)
+
+### Database Layer (`database/`)
+- **connections/mongo.js**: MongoDB connection management with connection pooling
+- **models/Question.js**: Mongoose schema with validation and static methods
+
+### Service Layer (`services/`)
+- **api/api.js**: Deepseek API integration with retry logic and error handling
+- **storage/mongoStorage.js**: Database operations with duplicate detection
+- **cli/cli.js**: Interactive command-line interface
+
+### Utility Layer (`utils/`)
+- **utils.js**: Common utility functions (hashing, validation, formatting)
+
+### Middleware Layer (`middleware/`)
+- **errorHandler.js**: Centralized error handling and logging
+- **logger.js**: Structured logging with different log levels
+
+## 🔧 Configuration
+
+### Application Configuration (`config/app.js`)
+```javascript
+{
+  environment: 'development',
+  topics: ['javascript', 'typescript', 'nodejs', 'sql', 'react'],
+  difficulties: ['easy', 'medium', 'hard', 'mixed'],
+  questionCounts: [3, 5, 10, 15],
+  logging: { level: 'info' }
+}
+```
+
+### API Configuration (`config/api.js`)
+```javascript
+{
+  deepseek: {
+    baseURL: 'https://openrouter.ai/api/v1/chat/completions',
+    model: 'deepseek/deepseek-chat-v3-0324:free',
+    timeout: 30000,
+    retryAttempts: 3
+  }
+}
+```
+
+### Database Configuration (`config/database.js`)
+```javascript
+{
+  mongodb: {
+    uri: process.env.MONGODB_URI,
+    options: { maxPoolSize: 10 }
+  },
+  indexes: [
+    { topic: 1, difficulty: 1 },
+    { question: 'text', example: 'text' }
+  ]
+}
+```
+
+## 🗄️ Database Schema
+
+Questions are stored in MongoDB with the following schema:
+- **id**: Unique identifier (String, indexed)
+- **question**: Question text (String, indexed, trimmed)
+- **difficulty**: Easy/Medium/Hard (String, indexed, enum)
+- **topic**: Programming topic (String, indexed, enum)
+- **tags**: Array of related concepts (Array, indexed, trimmed)
+- **example**: Code example (String, trimmed)
+- **options**: Array of solution approaches (Array, trimmed)
+- **answer**: Correct answer (String, trimmed)
+- **timestamp**: Creation timestamp (Date, indexed)
+- **hash**: Unique hash for duplicate detection (String, unique, indexed)
+- **savedAt**: Save timestamp (Date, indexed)
+- **createdAt/updatedAt**: MongoDB timestamps (auto-generated)
+
+## 🔄 Usage
 
 1. Run the CLI application
 2. Select a programming topic from the menu
 3. Choose difficulty level (Easy, Medium, Hard, or Mixed)
 4. Select number of questions to fetch (3, 5, 10, or 15)
 5. Questions are fetched from Deepseek API via OpenRouter
-6. New questions are saved to `data/{topic}.json`
+6. New questions are saved to MongoDB Atlas
 7. Duplicate questions are automatically detected and skipped
 8. Each question includes 4 solution approaches for learning
 
-## Question Format
 
-Each question includes:
-- **Question text** - The coding problem or challenge
-- **Difficulty level** - Easy, Medium, or Hard
-- **Tags** - Related concepts and technologies
-- **Example** - Code example or expected output
-- **4 Solution Options** - Different approaches to solve the problem
-- **Correct Answer** - The recommended/best approach from the options
-- **Metadata** - Timestamp, hash for duplicate detection
 
-## Project Structure
-
-```
-question-bank-cli/
-├── src/
-│   ├── cli.js          # CLI interface with difficulty selection
-│   ├── api.js          # OpenRouter/Deepseek API client
-│   ├── storage.js      # File management with duplicate detection
-│   └── utils.js        # Utilities (hash, validation)
-├── data/               # Generated question files
-│   ├── javascript.json
-│   ├── typescript.json
-│   ├── nodejs.json
-│   ├── sql.json
-│   ├── react.json
-│   └── hashes.json     # Duplicate detection
-├── .env                # API configuration (create this)
-├── package.json
-└── README.md
-```
-
-## API Requirements
-
-- OpenRouter API key (free tier available)
-- Access to `deepseek/deepseek-chat-v3-0324:free` model
-- Internet connection for API requests
-
-## Development
-
-- Node.js >= 14.0.0
-- Dependencies: inquirer@8.2.6, dotenv
-- Uses native `fetch` API (Node.js 18+) or polyfill for older versions
-
-## Test Mode
-
-The application includes a test mode with realistic mock questions when no API key is provided. This allows you to test all functionality without an API key.
-
-## Difficulty Levels
+## 📊 Difficulty Levels
 
 - **🟢 Easy**: Basic concepts, simple algorithms, fundamental programming problems
 - **🟡 Medium**: Intermediate algorithms, data structures, moderate complexity
 - **🔴 Hard**: Advanced algorithms, complex problems, optimization challenges
-- **🌈 Mixed**: Combination of all difficulty levels for comprehensive practice 
+- **🌈 Mixed**: Combination of all difficulty levels for comprehensive practice
+
+## 🔍 API Requirements
+
+- OpenRouter API key (free tier available)
+- Access to `deepseek/deepseek-chat-v3-0324:free` model
+- MongoDB Atlas connection string
+- Internet connection for API requests
+
+## 🛠️ Development
+
+### Prerequisites
+- Node.js >= 14.0.0
+- MongoDB Atlas account
+- OpenRouter API key
+
+### Dependencies
+- **inquirer**: Interactive CLI prompts
+- **dotenv**: Environment variable management
+- **mongoose**: MongoDB ODM
+- **mongodb**: MongoDB driver
+
+### Scripts
+```bash
+npm start          # Start the CLI application
+npm run dev        # Development mode
+npm test           # Run tests (not implemented yet)
+npm run lint       # Lint code (not implemented yet)
+```
+
+## 🏗️ Microservice Benefits
+
+### 1. **Separation of Concerns**
+- Each service has a single responsibility
+- Clear boundaries between different layers
+- Easy to understand and maintain
+
+### 2. **Scalability**
+- Services can be scaled independently
+- Database operations are optimized
+- API calls have retry logic and error handling
+
+### 3. **Maintainability**
+- Configuration is centralized
+- Error handling is standardized
+- Logging is structured and consistent
+
+### 4. **Testability**
+- Each service can be tested independently
+- Mock data is available for testing
+- Clear interfaces between services
+
+### 5. **Flexibility**
+- Easy to add new services
+- Configuration can be changed without code changes
+- Different deployment strategies possible
+
+## 🔧 Error Handling
+
+The application includes comprehensive error handling:
+
+- **API Errors**: Retry logic with exponential backoff
+- **Database Errors**: Connection pooling and graceful degradation
+- **Validation Errors**: Input sanitization and validation
+- **Network Errors**: Timeout handling and fallback mechanisms
+
+## 📝 Logging
+
+Structured logging with different levels:
+- **ERROR**: Critical errors that need immediate attention
+- **WARN**: Warning messages for potential issues
+- **INFO**: General information about application flow
+- **DEBUG**: Detailed debugging information
+
+## 🚀 Future Enhancements
+
+- [ ] Add unit tests for each service
+- [ ] Implement API rate limiting
+- [ ] Add question search functionality
+- [ ] Create web dashboard
+- [ ] Add user authentication
+- [ ] Implement question categories
+- [ ] Add performance monitoring
+- [ ] Create deployment scripts 

@@ -1,6 +1,6 @@
-const Question = require('./models/Question');
-const mongoConnection = require('./mongo');
-const { generateHash } = require('./utils');
+const Question = require('../../database/models/Question');
+const mongoConnection = require('../../database/connections/mongo');
+const { generateHash } = require('../../utils/utils');
 
 class MongoStorage {
     constructor() {
@@ -63,7 +63,7 @@ class MongoStorage {
             
             // Filter out duplicates and prepare new questions
             const uniqueQuestions = [];
-            const skippedCount = 0;
+            let skippedCount = 0;
             
             for (const question of newQuestions) {
                 const hash = generateHash(question.question + question.topic);
@@ -80,6 +80,7 @@ class MongoStorage {
                     uniqueQuestions.push(question);
                 } else {
                     console.log(`⚠️  Duplicate question detected and skipped: ${question.id}`);
+                    skippedCount++;
                 }
             }
             
@@ -218,6 +219,28 @@ class MongoStorage {
         } catch (error) {
             console.error('Error deleting question:', error);
             throw error;
+        }
+    }
+
+    async getQuestionsWithPagination(topic, page = 1, limit = 10) {
+        await this.ensureConnection();
+        
+        try {
+            const questions = await Question.getQuestionsWithPagination(topic, page, limit);
+            const total = await Question.getCountByTopic(topic);
+            
+            return {
+                questions: questions.map(q => q.toObject()),
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    pages: Math.ceil(total / limit)
+                }
+            };
+        } catch (error) {
+            console.error('Error getting questions with pagination:', error);
+            return { questions: [], pagination: { page, limit, total: 0, pages: 0 } };
         }
     }
 
