@@ -6,6 +6,10 @@ const appConfig = {
     topics: ['javascript', 'typescript', 'nodejs', 'sql', 'react'],
     difficulties: ['easy', 'medium', 'hard', 'mixed'],
     questionCounts: [3, 5, 10, 15],
+    models: [
+        { id: 'deepseek', name: 'Deepseek', description: 'Advanced reasoning and coding expertise' },
+        { id: 'openai', name: 'OpenAI GPT-3.5', description: 'Balanced performance and reliability' }
+    ],
     logging: {
         level: process.env.LOG_LEVEL || 'info',
         format: 'combined'

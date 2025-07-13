@@ -1,6 +1,45 @@
 const Question = require('../../database/models/Question');
 const mongoConnection = require('../../database/connections/mongo');
-const { generateHash } = require('../../utils/utils');
+const { generateHash, generateQuestionHash } = require('../../utils/utils');
+
+// Similarity calculation function
+function calculateSimilarity(str1, str2) {
+    const longer = str1.length > str2.length ? str1 : str2;
+    const shorter = str1.length > str2.length ? str2 : str1;
+    
+    if (longer.length === 0) return 1.0;
+    
+    const distance = levenshteinDistance(longer, shorter);
+    return (longer.length - distance) / longer.length;
+}
+
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+    
+    return matrix[str2.length][str1.length];
+}
 
 class MongoStorage {
     constructor() {
@@ -9,8 +48,13 @@ class MongoStorage {
 
     async ensureConnection() {
         if (!this.isConnected) {
-            await mongoConnection.connect();
-            this.isConnected = true;
+            try {
+                await mongoConnection.connect();
+                this.isConnected = true;
+            } catch (error) {
+                console.error('❌ Failed to establish database connection:', error.message);
+                throw new Error(`Database connection failed: ${error.message}`);
+            }
         }
     }
 
@@ -18,13 +62,13 @@ class MongoStorage {
         await this.ensureConnection();
         
         try {
-            const questions = await Question.find({}, 'hash topic id savedAt');
+            const questions = await Question.find({}, 'hash topic _id savedAt');
             const hashes = {};
             
             questions.forEach(q => {
                 hashes[q.hash] = {
                     topic: q.topic,
-                    id: q.id,
+                    _id: q._id,
                     savedAt: q.savedAt
                 };
             });
@@ -58,28 +102,43 @@ class MongoStorage {
         await this.ensureConnection();
         
         try {
-            // Load existing hashes to check for duplicates
-            const existingHashes = await this.loadHashes();
-            
             // Filter out duplicates and prepare new questions
             const uniqueQuestions = [];
             let skippedCount = 0;
             
             for (const question of newQuestions) {
-                const hash = generateHash(question.question + question.topic);
+                const hash = generateQuestionHash(question);
                 
-                if (!existingHashes[hash]) {
-                    // Add hash and timestamp if not present
-                    if (!question.hash) {
-                        question.hash = hash;
-                    }
-                    if (!question.savedAt) {
-                        question.savedAt = new Date().toISOString();
-                    }
+                // Check if this exact question already exists
+                const existingQuestion = await Question.findOne({ 
+                    hash: hash,
+                    topic: question.topic 
+                });
+                
+                if (!existingQuestion) {
+                    // Also check for similar questions using fuzzy matching
+                    const similarQuestions = await Question.find({ topic: question.topic });
+                    const isSimilar = similarQuestions.some(existing => {
+                        const similarity = calculateSimilarity(question.question, existing.question);
+                        return similarity > 0.85; // 85% similarity threshold
+                    });
                     
-                    uniqueQuestions.push(question);
+                    if (!isSimilar) {
+                        // Add hash and timestamp if not present
+                        if (!question.hash) {
+                            question.hash = hash;
+                        }
+                        if (!question.savedAt) {
+                            question.savedAt = new Date().toISOString();
+                        }
+                        
+                        uniqueQuestions.push(question);
+                    } else {
+                        console.log(`⚠️  Similar question detected and skipped: "${question.question.substring(0, 50)}..."`);
+                        skippedCount++;
+                    }
                 } else {
-                    console.log(`⚠️  Duplicate question detected and skipped: ${question.id}`);
+                    console.log(`⚠️  Exact duplicate detected and skipped: "${question.question.substring(0, 50)}..."`);
                     skippedCount++;
                 }
             }
@@ -99,10 +158,13 @@ class MongoStorage {
             
             for (const question of uniqueQuestions) {
                 try {
-                    // Double-check for existing ID before inserting
-                    const existingQuestion = await Question.findOne({ id: question.id });
-                    if (existingQuestion) {
-                        console.log(`⚠️  Skipping question with duplicate ID: ${question.id}`);
+                    // Check for existing hash to avoid duplicates
+                    const existingByHash = await Question.findOne({ hash: question.hash });
+                    if (existingByHash) {
+                        console.log(`⚠️  Skipping question with duplicate hash:`);
+                        console.log(`   Question: "${question.question.substring(0, 100)}..."`);
+                        console.log(`   Duplicate ID: ${existingByHash._id}`);
+                        console.log(`   Duplicate Question: "${existingByHash.question.substring(0, 100)}..."`);
                         failedCount++;
                         continue;
                     }
@@ -111,10 +173,24 @@ class MongoStorage {
                     savedQuestions.push(savedQuestion);
                 } catch (error) {
                     if (error.code === 11000) {
-                        console.log(`⚠️  Skipping question with duplicate key: ${question.id}`);
+                        console.log(`⚠️  Skipping question with duplicate key:`);
+                        console.log(`   Question: "${question.question.substring(0, 100)}..."`);
+                        console.log(`   Hash: ${question.hash}`);
+                        
+                        // Try to find the existing question that's causing the duplicate key error
+                        try {
+                            const existingQuestion = await Question.findOne({ hash: question.hash });
+                            if (existingQuestion) {
+                                console.log(`   Duplicate ID: ${existingQuestion._id}`);
+                                console.log(`   Duplicate Question: "${existingQuestion.question.substring(0, 100)}..."`);
+                            }
+                        } catch (findError) {
+                            console.log(`   Could not retrieve duplicate question details: ${findError.message}`);
+                        }
+                        
                         failedCount++;
                     } else {
-                        console.error(`❌ Error saving question ${question.id}:`, error.message);
+                        console.error(`❌ Error saving question:`, error.message);
                         failedCount++;
                     }
                 }
@@ -189,7 +265,7 @@ class MongoStorage {
         await this.ensureConnection();
         
         try {
-            return await Question.findOne({ id });
+            return await Question.findById(id);
         } catch (error) {
             console.error('Error getting question by ID:', error);
             return null;
@@ -200,8 +276,8 @@ class MongoStorage {
         await this.ensureConnection();
         
         try {
-            return await Question.findOneAndUpdate(
-                { id },
+            return await Question.findByIdAndUpdate(
+                id,
                 updates,
                 { new: true, runValidators: true }
             );
@@ -215,7 +291,7 @@ class MongoStorage {
         await this.ensureConnection();
         
         try {
-            return await Question.findOneAndDelete({ id });
+            return await Question.findByIdAndDelete(id);
         } catch (error) {
             console.error('Error deleting question:', error);
             throw error;

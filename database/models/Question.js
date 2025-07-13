@@ -2,12 +2,6 @@ const mongoose = require('mongoose');
 const databaseConfig = require('../../config/database');
 
 const questionSchema = new mongoose.Schema({
-    id: {
-        type: String,
-        required: true,
-        unique: true,
-        index: true
-    },
     question: {
         type: String,
         required: true,
@@ -71,8 +65,8 @@ const questionSchema = new mongoose.Schema({
 // Pre-save middleware to ensure hash is set
 questionSchema.pre('save', function(next) {
     if (!this.hash) {
-        const { generateHash } = require('../../utils/utils');
-        this.hash = generateHash(this.question + this.topic);
+        const { generateQuestionHash } = require('../../utils/utils');
+        this.hash = generateQuestionHash(this);
     }
     next();
 });

@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const { fetchQuestions } = require('../api/api');
 const { saveQuestions, getStats } = require('../storage/mongoStorage');
 const { formatTopicName } = require('../../utils/utils');
+const BackupManager = require('../../utils/backup');
 const appConfig = require('../../config/app');
 
 async function main() {
@@ -23,6 +24,16 @@ async function main() {
                     name: formatTopicName(topic),
                     value: topic
                 }))
+            },
+            {
+                type: 'list',
+                name: 'model',
+                message: 'Choose AI model:',
+                choices: appConfig.models.map(model => ({
+                    name: `${model.id === 'deepseek' ? '🤖' : '🧠'} ${model.name} - ${model.description}`,
+                    value: model.id
+                })),
+                default: 0
             },
             {
                 type: 'list',
@@ -59,15 +70,17 @@ async function main() {
             return;
         }
 
-        const { topic, difficulty, count } = answers;
+        const { topic, model, difficulty, count } = answers;
         const topicName = formatTopicName(topic);
         const difficultyText = difficulty === 'mixed' ? 'mixed difficulty' : `${difficulty} level`;
+        const selectedModel = appConfig.models.find(m => m.id === model);
+        const modelName = selectedModel ? selectedModel.name : model;
 
-        console.log(`\n📚 Fetching ${count} ${topicName} questions (${difficultyText}) from Deepseek API...`);
+        console.log(`\n📚 Fetching ${count} ${topicName} questions (${difficultyText}) using ${modelName}...`);
         console.log('⏳ This may take a few moments...\n');
         
         // Fetch questions from API
-        const questions = await fetchQuestions(topic, count, difficulty);
+        const questions = await fetchQuestions(topic, count, difficulty, model);
         
         if (!questions || questions.length === 0) {
             console.log('❌ No questions were fetched from the API.');
@@ -80,6 +93,13 @@ async function main() {
         }
 
         console.log(`✅ Successfully fetched ${questions.length} questions!`);
+        
+        // Create backup manager
+        const backupManager = new BackupManager();
+        
+        // Save questions to backup file first
+        console.log('\n💾 Creating backup of questions...');
+        const backupFile = await backupManager.saveQuestionsToFile(topic, questions, model, difficulty);
         
         // Display question preview
         console.log('\n📋 Question Preview:');
@@ -94,8 +114,31 @@ async function main() {
         });
         
         // Save questions with duplicate detection
-        console.log('\n💾 Saving questions with duplicate detection...');
-        const result = await saveQuestions(topic, questions);
+        console.log('\n💾 Saving questions to database...');
+        let result;
+        try {
+            result = await saveQuestions(topic, questions);
+        } catch (error) {
+            console.error('❌ Database save failed:', error.message);
+            console.log('💾 Questions are safely backed up in:', backupFile);
+            console.log('🔄 You can retry database insertion later');
+            
+            // Ask if user wants to see backup stats
+            const { showBackupStats } = await inquirer.prompt([
+                {
+                    type: 'confirm',
+                    name: 'showBackupStats',
+                    message: 'Would you like to see backup statistics?',
+                    default: false
+                }
+            ]);
+            
+            if (showBackupStats) {
+                await showBackupStats(backupManager);
+            }
+            
+            return;
+        }
         
         // Display results
         console.log('\n📊 Results Summary:');
@@ -157,6 +200,26 @@ async function showStats() {
     } catch (error) {
         // Silently handle stats errors - not critical for main functionality
         console.log('📝 Ready to fetch your first questions!\n');
+    }
+}
+
+async function showBackupStats(backupManager) {
+    try {
+        console.log('\n📊 Backup Statistics:');
+        const stats = await backupManager.getBackupStats();
+        
+        if (Object.keys(stats).length === 0) {
+            console.log('   📝 No backup files found');
+            return;
+        }
+        
+        Object.values(stats).forEach(stat => {
+            console.log(`   • ${formatTopicName(stat.topic)} (${stat.model}): ${stat.totalQuestions} questions in ${stat.files.length} files`);
+        });
+        
+        console.log('\n💡 Backup files are stored in the "backups" directory');
+    } catch (error) {
+        console.error('❌ Error showing backup stats:', error.message);
     }
 }
 

@@ -10,6 +10,17 @@ function generateHash(content) {
 }
 
 /**
+ * Generate a hash for a question object
+ * @param {Object} question - The question object
+ * @returns {string} - The generated hash
+ */
+function generateQuestionHash(question) {
+    // Create a more robust hash including question text and answer
+    const content = `${question.question.toLowerCase().trim()}_${question.answer.toLowerCase().trim()}`;
+    return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+/**
  * Format topic name for display
  * @param {string} topic - The topic to format
  * @returns {string} - The formatted topic name
@@ -146,6 +157,7 @@ function calculatePagination(total, page, limit) {
 
 module.exports = {
     generateHash,
+    generateQuestionHash,
     formatTopicName,
     validateQuestion,
     sanitizeQuestion,

@@ -4,24 +4,16 @@ const { generateHash } = require('../../utils/utils');
 
 class DeepseekAPI {
     constructor() {
-        this.apiKey = apiConfig.deepseek.apiKey;
-        this.baseURL = apiConfig.deepseek.baseURL;
-        this.model = apiConfig.deepseek.model;
-        this.headers = apiConfig.deepseek.headers;
         this.timeout = apiConfig.timeout;
         this.retryAttempts = apiConfig.retryAttempts;
         this.retryDelay = apiConfig.retryDelay;
-        
-        if (!this.apiKey) {
-            throw new Error('API_KEY environment variable is required');
-        }
     }
 
-    async fetchQuestions(topic, count = 5, difficulty = 'mixed') {
+    async fetchQuestions(topic, count = 5, difficulty = 'mixed', model = 'deepseek') {
         try {
             const prompt = this.generatePrompt(topic, count, difficulty);
             
-            const response = await this.makeAPIRequest(prompt);
+            const response = await this.makeAPIRequest(prompt, model);
             const content = response.choices[0].message.content;
             const parsedQuestions = this.parseQuestions(content, topic);
             
@@ -40,19 +32,28 @@ class DeepseekAPI {
         }
     }
 
-    async makeAPIRequest(prompt) {
+    async makeAPIRequest(prompt, model = 'deepseek') {
+        const modelConfig = apiConfig[model];
+        if (!modelConfig) {
+            throw new Error(`Unsupported model: ${model}`);
+        }
+
+        if (!modelConfig.apiKey) {
+            throw new Error(`${model.toUpperCase()}_API_KEY environment variable is required`);
+        }
+
         let lastError;
         
         for (let attempt = 1; attempt <= this.retryAttempts; attempt++) {
             try {
-                const response = await fetch(this.baseURL, {
+                const response = await fetch(modelConfig.baseURL, {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${this.apiKey}`,
-                        ...this.headers
+                        "Authorization": `Bearer ${modelConfig.apiKey}`,
+                        ...modelConfig.headers
                     },
                     body: JSON.stringify({
-                        "model": this.model,
+                        "model": modelConfig.model,
                         "messages": [
                             {
                                 "role": "system",
@@ -151,7 +152,6 @@ class DeepseekAPI {
         Return ONLY a valid JSON array with this exact structure:
         [
             {
-                "id": "unique_id",
                 "question": "question text",
                 "difficulty": "easy|medium|hard",
                 "topic": "${topic}",
@@ -276,10 +276,6 @@ class DeepseekAPI {
                 questions = [questions];
             }
             
-            // Generate a unique base timestamp for this batch to avoid ID conflicts
-            const baseTimestamp = Date.now();
-            const randomSuffix = Math.random().toString(36).substring(2, 8);
-            
             // Validate and enhance questions, filtering out invalid ones
             const validQuestions = questions
                 .filter(q => {
@@ -290,7 +286,6 @@ class DeepseekAPI {
                     return true;
                 })
                 .map((q, index) => ({
-                    id: q.id || `${topic}_${baseTimestamp}_${randomSuffix}_${index}`,
                     question: q.question || 'No question text provided',
                     difficulty: q.difficulty || 'medium',
                     topic: topic,
@@ -318,9 +313,9 @@ class DeepseekAPI {
     }
 }
 
-async function fetchQuestions(topic, count = 5, difficulty = 'mixed') {
+async function fetchQuestions(topic, count = 5, difficulty = 'mixed', model = 'deepseek') {
     const api = new DeepseekAPI();
-    return await api.fetchQuestions(topic, count, difficulty);
+    return await api.fetchQuestions(topic, count, difficulty, model);
 }
 
 module.exports = {

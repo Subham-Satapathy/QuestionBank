@@ -37,10 +37,12 @@ question-bank-cli/
 ## 🚀 Features
 
 - 🎯 **Interactive CLI** with topic selection (JavaScript, TypeScript, Node.js, SQL, React)
+- 🤖 **AI Model Selection** (Deepseek or OpenAI GPT-3.5)
 - 🎚️ **Difficulty selection** (Easy, Medium, Hard, Mixed)
-- 🤖 **Deepseek API integration** via OpenRouter using free model
 - 🔍 **Hash-based duplicate detection** to avoid storing duplicate questions
 - ☁️ **MongoDB Atlas cloud storage** for scalability and accessibility
+- 💾 **Automatic backup system** - questions are saved to JSON files before database insertion
+- 🔄 **Backup restoration** - restore questions from backup files if database fails
 - 🔐 **Secure configuration management** with environment variables
 - 💡 **Each question includes 4 multiple choice solution approaches**
 - 🏗️ **Microservice architecture** for maintainability and scalability
@@ -170,12 +172,54 @@ Questions are stored in MongoDB with the following schema:
 
 1. Run the CLI application
 2. Select a programming topic from the menu
-3. Choose difficulty level (Easy, Medium, Hard, or Mixed)
-4. Select number of questions to fetch (3, 5, 10, or 15)
-5. Questions are fetched from Deepseek API via OpenRouter
-6. New questions are saved to MongoDB Atlas
-7. Duplicate questions are automatically detected and skipped
-8. Each question includes 4 solution approaches for learning
+3. Choose AI model (Deepseek or OpenAI GPT-3.5)
+4. Choose difficulty level (Easy, Medium, Hard, or Mixed)
+5. Select number of questions to fetch (3, 5, 10, or 15)
+6. Questions are fetched from the selected AI model via OpenRouter
+7. **Questions are automatically backed up to JSON files** before database insertion
+8. New questions are saved to MongoDB Atlas
+9. Duplicate questions are automatically detected and skipped
+10. Each question includes 4 solution approaches for learning
+
+## 💾 Backup System
+
+The application includes a robust backup system to prevent data loss:
+
+### Automatic Backup
+- Questions are automatically saved to JSON files in the `backups/` directory
+- Backup files are created before database insertion
+- If database insertion fails, questions are safely preserved in backup files
+- Backup files include metadata (topic, model, difficulty, timestamp)
+
+### Backup File Format
+```json
+{
+  "metadata": {
+    "topic": "react",
+    "model": "openai",
+    "difficulty": "mixed",
+    "timestamp": "2024-01-15T10:30:00.000Z",
+    "count": 5,
+    "source": "AI API"
+  },
+  "questions": [...]
+}
+```
+
+### Restore from Backup
+```bash
+node restoreFromBackup.js
+```
+This utility allows you to:
+- View available backup files
+- Select specific files to restore
+- Restore questions to the database
+- Clean up old backup files
+
+### Backup Management
+- Backup files are stored in `backups/` directory
+- Files are automatically cleaned up after 7 days
+- Backup directory is excluded from git
 
 
 
